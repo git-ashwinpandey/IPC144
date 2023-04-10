@@ -460,7 +460,30 @@ void viewAllAppointments(struct ClinicData* clinicData)
 // View appointment schedule for the user input date
 void viewAppointmentSchedule(struct ClinicData* clinicData)
 {
-    
+    int year, month, day, maxDay, patientIndex, i;
+    printf("Year          : ");
+    year = inputIntPositive();
+    printf("Month (%d - %d): ", MIN_MONTH, MAX_MONTH);
+    month = inputIntRange(MIN_MONTH, MAX_MONTH);
+    maxDay = monthDays(year, month);
+    printf("Day (%d - %d): ", MIN_DAY, maxDay);
+    month = inputIntRange(MIN_DAY, maxDay);
+
+    sortRecords(clinicData->appointments, clinicData->maxAppointments);
+    displayScheduleTableHeader(&clinicData->appointments->date, 0);
+
+    for (i = 0; i < clinicData->maxPatient; i++)
+    {
+        if (clinicData->appointments[i].date.year == year && clinicData->appointments[i].date.month && clinicData->appointments[i].date.day)
+        {
+            patientIndex = findPatientIndexByPatientNum(clinicData->appointments[i].patientNumber, clinicData->patients, MAX_RECORD);
+            if (patientIndex != -1)
+            {
+                displayScheduleData(&clinicData->patients[patientIndex], &clinicData->appointments[i], 0);
+            }
+        }
+
+    }
 }
 
 
@@ -715,6 +738,33 @@ void sortRecords(struct Appointment appoints[], int max)
         }
         
     }
+}
+
+int monthDays(int year, int month)
+{
+    int days;
+    switch (month) {
+    case 2:
+        if ((year % 4) == 0 && (year % 100) != 0 || (year % 400) == 0)
+        {
+            days = 29;
+        }
+        else
+        {
+            days = 28;
+        }
+        break;
+    case 4:
+    case 6:
+    case 9:
+    case 11:
+        days = 30;
+        break;
+    default:
+        days = 31;
+        break;
+    }
+    return days;
 }
 
 //////////////////////////////////////

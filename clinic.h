@@ -37,6 +37,9 @@ piece of work is entirely of my own creation.
 // MS#3 Additional macro's:
 // ToDo:
 #define MAX_RECORD 15
+#define MIN_MONTH 1
+#define MAX_MONTH 12
+#define MIN_DAY 1
 
 
 //////////////////////////////////////

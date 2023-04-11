@@ -20,7 +20,11 @@ piece of work is entirely of my own creation.
 
 
 //////////////////////////////////////
-// Module macro's (usable by any file that includes this header)
+// Module macro's (usable by any file that includes this header)0
+// 
+// 
+// 
+// 
 //////////////////////////////////////
 
 // Display formatting options (Provided to student)
@@ -35,11 +39,17 @@ piece of work is entirely of my own creation.
 
 
 // MS#3 Additional macro's:
-// ToDo:
-#define MAX_RECORD 15
 #define MIN_MONTH 1
 #define MAX_MONTH 12
 #define MIN_DAY 1
+#define MIN_HOUR 0
+#define MAX_HOUR 23
+#define MIN_MINUTE 0
+#define MAX_MINUTE 59
+
+#define OP_START 10
+#define OP_END 14
+#define TIME_SLOT_INTERVAL 30
 
 
 //////////////////////////////////////
@@ -168,11 +178,12 @@ void viewAppointmentSchedule(struct ClinicData* clinicData);
 
 
 // Add an appointment record to the appointment array
-// Todo:
+void addAppointment(struct Appointment* appoints, int maxAppointment, struct Patient* patient, int maxPatients);
 
 
 // Remove an appointment record from the appointment array
-// Todo:
+void removeAppointment(struct Appointment* appoints, int maxAppointment, struct Patient* patient, int maxPatients);
+
 
 
 

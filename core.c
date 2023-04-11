@@ -120,36 +120,47 @@ int inputIntRange(int lowerBound, int upperBound)
 // Validates user input char with list of valid characters
 char inputCharOption(const char charArray[])
 {
-    char userInput;
+    char userInput[50];
     int validChar = 1, stringLength = 0, i;
-    int charFound = 0;
+    int charFound = 0, charLength;
 
 
     stringLength = strlen(charArray);
+  
 
     while (validChar)
     {
-        scanf(" %c", &userInput);
+        scanf("%s", userInput);
+        charLength = strlen(userInput);
+        
 
-        for(i=0; i<stringLength; i++)
+        if (charLength != 1)
         {
-            if (userInput == charArray[i])
-            {
-                charFound++;
-            }
-        }
-
-        if (charFound == 0)
-        {
-            printf("ERROR: Character must be one of [qwErty]: ");
+            printf("ERROR: Character must be one of [%s]: ", charArray);
         }
         else
         {
-            validChar = 0;
-        }
-    }
+            for (i = 0; i < strlen(charArray); i++)
+            {
+                if (charArray[i] == userInput[0])
+                {
+                    charFound++;
+                }
+            }
 
-    return userInput;
+            if (charFound != 1)
+            {
+                printf("ERROR: Character must be one of [%s]: ", charArray);
+            }
+            else
+            {
+                validChar = 0;
+            }
+        }
+        
+    }
+    
+    return userInput[0];
 }
 
 //Get a string from the user within specified length
@@ -167,14 +178,21 @@ void inputCString(char * cString, int minChar, int maxChar)
 
 
         //Check whether the length of the string is between specified min and max value
-        if (!(stringLength >= minChar && stringLength <= maxChar) && (minChar == maxChar))
+        if (!(stringLength >= minChar && stringLength <= maxChar))
         {
-            printf("ERROR: String length must be exactly %d chars: ", minChar);
-            validString = 1;
-        }
-        else if (!(stringLength >= minChar && stringLength <= maxChar))
-        {
-            if (stringLength < minChar)
+            if (maxChar == minChar)
+            {
+                if (maxChar == 10 && minChar == 10)
+                {
+                    printf("Invalid %d-digit number! Number: ", maxChar);
+                }
+                else
+                {
+                    printf("ERROR: String length must be exactly %d chars: ", minChar);
+                }
+
+            }
+            else if (stringLength < minChar)
             {
                 printf("ERROR: String length must be between %d and %d chars: ", minChar, maxChar);
                 validString = 1;
@@ -184,8 +202,9 @@ void inputCString(char * cString, int minChar, int maxChar)
                 printf("ERROR: String length must be no more than %d chars: ", maxChar);
                 validString = 1;
             }
-
+            validString = 1;
         }
+        
         else
         {
             strcpy(cString, userString);

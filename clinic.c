@@ -436,7 +436,7 @@ void viewAllAppointments(struct ClinicData* clinicData)
 {
     int i, patientIndex;
     displayScheduleTableHeader(&clinicData->appointments->date, 1);
-    sortRecords(clinicData);
+    sortRecords(clinicData->appointments, clinicData->maxAppointments);
     
     for(i = 0; i<clinicData->maxPatient; i++)
     {
@@ -465,7 +465,7 @@ void viewAppointmentSchedule(struct ClinicData* clinicData)
     printf("Day (%d-%d)  : ", MIN_DAY, maxDay);
     date.day = inputIntRange(MIN_DAY, maxDay);
 
-    sortRecords(clinicData);
+    sortRecords(clinicData->appointments, clinicData->maxAppointments);
     printf("\n");
     displayScheduleTableHeader(&date, 0);
     for (i = 0; i < clinicData->maxPatient; i++)
@@ -576,7 +576,7 @@ void removeAppointment(struct Appointment* appoints, int maxAppointment, struct 
         if (appointIndex != -1)
         {
             
-            displayPatientData(patient, FMT_FORM);
+            displayPatientData(&patient[patientIndex], FMT_FORM);
             printf("Are you sure you want to remove this appointment (y,n): ");
 
             if (inputCharOption("yn") == 'y') {
@@ -765,55 +765,51 @@ int findAppointmentIndex(struct Appointment* appoints, int maxAppointment, struc
 //till it reaches a value for which patient number isn't 0. That's starting point for our sorting 
 //algorithm
 
-void sortRecords(struct ClinicData clinicData[])
+void sortRecords(struct Appointment appoints[], int max)
 {
     int i, j;
     struct Appointment temp;
-    for (i = clinicData->maxAppointments - 1; i > 0; i--)
+
+    for (i = max - 1; i > 0; i--)
     {
-        if (clinicData->appointments[i].patientNumber != 0)
+        if (appoints[i].patientNumber != 0)
         {
             for (j = 0; j < i; j++)
             {
-                if (clinicData->appointments[j].date.year > clinicData->appointments[j + 1].date.year)
+                if (appoints[j].date.year > appoints[j + 1].date.year)
                 {
-                    temp = clinicData->appointments[j];
-                    clinicData->appointments[j] = clinicData->appointments[j + 1];
-                    clinicData->appointments[j + 1] = temp;
+                    temp = appoints[j];
+                    appoints[j] = appoints[j + 1];
+                    appoints[j + 1] = temp;
                 }
-                else if ((clinicData->appointments[j].date.year == clinicData->appointments[j + 1].date.year) 
-                    && (clinicData->appointments[j].date.month > clinicData->appointments[j + 1].date.month))
+                else if ((appoints[j].date.year == appoints[j + 1].date.year) && (appoints[j].date.month > appoints[j + 1].date.month))
                 {
-                    temp = clinicData->appointments[j];
-                    clinicData->appointments[j] = clinicData->appointments[j + 1];
-                    clinicData->appointments[j + 1] = temp;
+                    temp = appoints[j];
+                    appoints[j] = appoints[j + 1];
+                    appoints[j + 1] = temp;
                 }
-                else if ((clinicData->appointments[j].date.year == clinicData->appointments[j + 1].date.year) 
-                    && (clinicData->appointments[j].date.month == clinicData->appointments[j + 1].date.month) 
-                    && clinicData->appointments[j].date.day > clinicData->appointments[j + 1].date.day)
+                else if ((appoints[j].date.year == appoints[j + 1].date.year) && (appoints[j].date.month == appoints[j + 1].date.month) && appoints[j].date.day > appoints[j + 1].date.day)
                 {
-                    temp = clinicData->appointments[j];
-                    clinicData->appointments[j] = clinicData->appointments[j + 1];
-                    clinicData->appointments[j + 1] = temp;
+                    temp = appoints[j];
+                    appoints[j] = appoints[j + 1];
+                    appoints[j + 1] = temp;
                 }
-                else if ((clinicData->appointments[j].date.year == clinicData->appointments[j + 1].date.year) &&
-                    (clinicData->appointments[j].date.month == clinicData->appointments[j + 1].date.month) &&
-                    clinicData->appointments[j].date.day == clinicData->appointments[j + 1].date.day 
-                    && clinicData->appointments[j].time.hour > clinicData->appointments[j + 1].time.hour)
+                else if ((appoints[j].date.year == appoints[j + 1].date.year) &&
+                    (appoints[j].date.month == appoints[j + 1].date.month) &&
+                    appoints[j].date.day == appoints[j + 1].date.day && appoints[j].time.hour > appoints[j + 1].time.hour)
                 {
-                    temp = clinicData->appointments[j];
-                    clinicData->appointments[j] = clinicData->appointments[j + 1];
-                    clinicData->appointments[j + 1] = temp;
+                    temp = appoints[j];
+                    appoints[j] = appoints[j + 1];
+                    appoints[j + 1] = temp;
                 }
-                else if ((clinicData->appointments[j].date.year == clinicData->appointments[j + 1].date.year) &&
-                    (clinicData->appointments[j].date.month == clinicData->appointments[j + 1].date.month) &&
-                    clinicData->appointments[j].date.day == clinicData->appointments[j + 1].date.day 
-                    && clinicData->appointments[j].time.hour == clinicData->appointments[j + 1].time.hour
-                    && clinicData->appointments[j].time.min > clinicData->appointments[j + 1].time.min)
+                else if ((appoints[j].date.year == appoints[j + 1].date.year) &&
+                    (appoints[j].date.month == appoints[j + 1].date.month) &&
+                    appoints[j].date.day == appoints[j + 1].date.day && appoints[j].time.hour == appoints[j + 1].time.hour
+                    && appoints[j].time.min > appoints[j + 1].time.min)
                 {
-                    temp = clinicData->appointments[j];
-                    clinicData->appointments[j] = clinicData->appointments[j + 1];
-                    clinicData->appointments[j + 1] = temp;
+                    temp = appoints[j];
+                    appoints[j] = appoints[j + 1];
+                    appoints[j + 1] = temp;
                 }
 
             }

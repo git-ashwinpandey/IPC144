@@ -217,7 +217,7 @@ int findAppointmentIndex(struct Appointment* appoints, int maxAppointment, struc
 //Since there are array with empty structure values, max appoitment counts down 
 //till it reaches a value for which patient number isn't 0. That's starting point for our sorting 
 //algorithm
-void sortRecords(struct ClinicData clinicData[]);
+void sortRecords(struct Appointment appoints[], int max);
 
 //Return the number of days in a month. Accounts for leap year.
 int monthDays(int year, int month);

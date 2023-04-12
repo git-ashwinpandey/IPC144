@@ -979,4 +979,3 @@ int importAppointments(const char* datafile, struct Appointment appoints[], int 
     fclose(fp);
     return counter;
 }
-

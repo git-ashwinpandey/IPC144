@@ -1,9 +1,9 @@
 /*/////////////////////////////////////////////////////////////////////////
                         Assignment 1 - Milestone 3
-Full Name  :
-Student ID#:
-Email      :
-Section    :
+Full Name  : Ashwin Pandey
+Student ID#: 156027211
+Email      : apandey21@myseneca.ca
+Section    : NFF
 
 Authenticity Declaration:
 I declare this submission is the result of my own work and has not been
@@ -296,11 +296,6 @@ void displayAllPatients(const struct Patient patient[], int max, int fmt)
                 printf(" (%s)\n", patient[i].phone.description);
             }
         }
-
-        /*else
-        {
-            printf("*** No recors found ***\n");
-        }*/
     }
     printf("\n");
 }
@@ -368,7 +363,6 @@ void addPatient(struct Patient patient[], int max)
         inputPatient(&patient[emptyIndex]);
         printf("*** New patient record added ***\n\n");
     }
-    //clearInputBuffer();
 }
 
 
@@ -407,7 +401,6 @@ void removePatient(struct Patient patient[], int max)
     if (patientIndex == -1)
     {
         printf("\nERROR: Patient record not found!\n\n");
-        //clearInputBuffer();
     }
     else
     {
@@ -443,7 +436,7 @@ void viewAllAppointments(struct ClinicData* clinicData)
 {
     int i, patientIndex;
     displayScheduleTableHeader(&clinicData->appointments->date, 1);
-    sortRecords(clinicData->appointments, clinicData->maxAppointments);
+    sortRecords(clinicData);
     
     for(i = 0; i<clinicData->maxPatient; i++)
     {
@@ -461,22 +454,24 @@ void viewAllAppointments(struct ClinicData* clinicData)
 // View appointment schedule for the user input date
 void viewAppointmentSchedule(struct ClinicData* clinicData)
 {
-    int year, month, day, maxDay, patientIndex, i;
+    int maxDay, patientIndex, i;
+    struct Date date;
+
     printf("Year        : ");
-    year = inputIntPositive();
+    date.year = inputIntPositive();
     printf("Month (%d-%d): ", MIN_MONTH, MAX_MONTH);
-    month = inputIntRange(MIN_MONTH, MAX_MONTH);
-    maxDay = monthDays(year, month);
+    date.month = inputIntRange(MIN_MONTH, MAX_MONTH);
+    maxDay = monthDays(date.year, date.month);
     printf("Day (%d-%d)  : ", MIN_DAY, maxDay);
-    month = inputIntRange(MIN_DAY, maxDay);
+    date.day = inputIntRange(MIN_DAY, maxDay);
 
-    sortRecords(clinicData->appointments, clinicData->maxAppointments);
-    printf("\n\n");
-    displayScheduleTableHeader(&clinicData->appointments->date, 0);
-
+    sortRecords(clinicData);
+    printf("\n");
+    displayScheduleTableHeader(&date, 0);
     for (i = 0; i < clinicData->maxPatient; i++)
     {
-        if (clinicData->appointments[i].date.year == year && clinicData->appointments[i].date.month && clinicData->appointments[i].date.day)
+        if (clinicData->appointments[i].date.year == date.year && clinicData->appointments[i].date.month == date.month 
+            && clinicData->appointments[i].date.day == date.day)
         {
             patientIndex = findPatientIndexByPatientNum(clinicData->appointments[i].patientNumber, clinicData->patients, clinicData->maxPatient);
             if (patientIndex != -1)
@@ -493,13 +488,12 @@ void viewAppointmentSchedule(struct ClinicData* clinicData)
 // Add an appointment record to the appointment array
 void addAppointment(struct Appointment* appoints, int maxAppointment, struct Patient* patient, int maxPatients)
 {
-    int emptyIndex = -1, foundSlot = 1, i = 0, isSlotAvailable, patientFound, controlFlag = 1;
-    int day, month, year, hour, minute, maxDay, patientNumber;
+    int emptyIndex = -1, isSlotAvailable, patientFound, controlFlag = 1;
+    int maxDay, patientNumber;
     struct Time time;
     struct Date date;
 
     emptyIndex = nextAppointment(appoints, maxAppointment);
-    printf("%d\n", emptyIndex);
 
     printf("Patient Number: ");
     patientNumber = inputIntPositive();
@@ -542,7 +536,6 @@ void addAppointment(struct Appointment* appoints, int maxAppointment, struct Pat
         if (isSlotAvailable)
         {
             appoints[emptyIndex].patientNumber = patientNumber;
-            printf("%d\n", appoints[emptyIndex].patientNumber);
             appoints[emptyIndex].date = date;
             appoints[emptyIndex].time = time;
             printf("\n*** Appointment scheduled! ***\n\n");
@@ -550,7 +543,7 @@ void addAppointment(struct Appointment* appoints, int maxAppointment, struct Pat
         }
         else
         {
-            printf("ERROR: Appointment timeslot is not available!\n\n");
+            printf("\nERROR: Appointment timeslot is not available!\n\n");
         }
         
     }
@@ -575,7 +568,7 @@ void removeAppointment(struct Appointment* appoints, int maxAppointment, struct 
         printf("Month (%d-%d): ", MIN_MONTH, MAX_MONTH);
         tempDate.month = inputIntRange(1, 12);
         maxDay = monthDays(tempDate.year, tempDate.month);
-        printf("Day (%d - %d): ", MIN_DAY, maxDay);
+        printf("Day (%d-%d)  : ", MIN_DAY, maxDay);
         tempDate.day = inputIntRange(MIN_DAY, maxDay);
 
         appointIndex = findAppointmentIndex(appoints, maxAppointment, tempDate, patientNumber);
@@ -589,6 +582,7 @@ void removeAppointment(struct Appointment* appoints, int maxAppointment, struct 
             if (inputCharOption("yn") == 'y') {
                 appoints[appointIndex].patientNumber = 0;
                 printf("\nAppointment record has been removed!\n\n");
+                clearInputBuffer();
             }
             else
             {
@@ -604,60 +598,6 @@ void removeAppointment(struct Appointment* appoints, int maxAppointment, struct 
     {
         printf("ERROR: Patient record not found!\n\n");
     }
-    clearInputBuffer();
-    
-}
-
-int nextAppointment(struct Appointment* appoints, int maxAppointment)
-{
-    int counter = 0, highestNo = 0, flag = 1;
-
-    while (flag)
-    {
-        if (appoints[counter].patientNumber != 0 && counter < maxAppointment)
-        {
-            if (highestNo < appoints[counter].patientNumber)
-            {
-                highestNo = counter;
-            }
-        }
-        if (counter == maxAppointment)
-        {
-            flag = 0;
-        }
-        counter++;
-
-    }
-    return highestNo + 1;
-}
-
-
-int timeSlotAvailable(struct Date date, struct Time time, struct Appointment* appoints, int maxAppointment)
-{
-    for (int i = 0; i < maxAppointment; i++) {
-        if (appoints[i].date.year == date.year &&
-            appoints[i].date.month == date.month &&
-            appoints[i].date.day == date.day &&
-            appoints[i].time.hour == time.hour &&
-            appoints[i].time.min == time.min) {
-            return 0; // Not available
-        }
-    }
-    return 1; // Available
-}
-
-int findAppointmentIndex(struct Appointment* appoints, int maxAppointment, struct Date date, int patientNumber)
-{
-    int i, appointIndex = -1;
-    for (i = 0; i < maxAppointment; i++)
-    {
-        if (appoints[i].date.year == date.year && appoints[i].date.month == date.month && appoints[i].date.day == date.day
-            && appoints[i].patientNumber == patientNumber)
-        {
-            appointIndex = i;
-        }
-    }
-    return appointIndex;
 }
 
 
@@ -679,14 +619,12 @@ void searchPatientByPatientNumber(const struct Patient patient[], int max)
     if (patientIndex == -1)
     {
         printf("*** No records found ***\n\n");
-        //clearInputBuffer();
         suspend();
         searchPatientData(patient, max);
     }
     else {
         displayPatientData(&patient[patientIndex], FMT_FORM);
-        printf("\n");
-        //clearInputBuffer();
+        printf("\n");       
         suspend();
         searchPatientData(patient, max);
     }
@@ -767,7 +705,150 @@ int findPatientIndexByPatientNum(int patientNumber,
     return patientIndex;
 }
 
+//Finds the next empty index to save the appointment 
+int nextAppointment(struct Appointment* appoints, int maxAppointment)
+{
+    int counter = 0, highestNo = 0, flag = 1;
 
+    while (flag)
+    {
+        if (appoints[counter].patientNumber != 0 && counter < maxAppointment)
+        {
+            if (highestNo < appoints[counter].patientNumber)
+            {
+                highestNo = counter;
+            }
+        }
+        if (counter == maxAppointment)
+        {
+            flag = 0;
+        }
+        counter++;
+
+    }
+    return highestNo + 1;
+}
+
+//Checks if the entered time slot is available
+int timeSlotAvailable(struct Date date, struct Time time, struct Appointment* appoints, int maxAppointment)
+{
+    int i;
+    for (i = 0; i < maxAppointment; i++) 
+    {
+        if (appoints[i].date.year == date.year &&
+            appoints[i].date.month == date.month &&
+            appoints[i].date.day == date.day &&
+            appoints[i].time.hour == time.hour &&
+            appoints[i].time.min == time.min) {
+            return 0; // Not available
+        }
+    }
+    return 1; // Available
+}
+//Finds the index number of the appointment using appointment date and patient number
+int findAppointmentIndex(struct Appointment* appoints, int maxAppointment, struct Date date, int patientNumber)
+{
+    int i, appointIndex = -1;
+    for (i = 0; i < maxAppointment; i++)
+    {
+        if (appoints[i].date.year == date.year && appoints[i].date.month == date.month && appoints[i].date.day == date.day
+            && appoints[i].patientNumber == patientNumber)
+        {
+            appointIndex = i;
+        }
+    }
+    return appointIndex;
+}
+
+//Sort the appointment in ascending order.
+//Since there are array with empty structure values, max appoitment counts down 
+//till it reaches a value for which patient number isn't 0. That's starting point for our sorting 
+//algorithm
+
+void sortRecords(struct ClinicData clinicData[])
+{
+    int i, j;
+    struct Appointment temp;
+    for (i = clinicData->maxAppointments - 1; i > 0; i--)
+    {
+        if (clinicData->appointments[i].patientNumber != 0)
+        {
+            for (j = 0; j < i; j++)
+            {
+                if (clinicData->appointments[j].date.year > clinicData->appointments[j + 1].date.year)
+                {
+                    temp = clinicData->appointments[j];
+                    clinicData->appointments[j] = clinicData->appointments[j + 1];
+                    clinicData->appointments[j + 1] = temp;
+                }
+                else if ((clinicData->appointments[j].date.year == clinicData->appointments[j + 1].date.year) 
+                    && (clinicData->appointments[j].date.month > clinicData->appointments[j + 1].date.month))
+                {
+                    temp = clinicData->appointments[j];
+                    clinicData->appointments[j] = clinicData->appointments[j + 1];
+                    clinicData->appointments[j + 1] = temp;
+                }
+                else if ((clinicData->appointments[j].date.year == clinicData->appointments[j + 1].date.year) 
+                    && (clinicData->appointments[j].date.month == clinicData->appointments[j + 1].date.month) 
+                    && clinicData->appointments[j].date.day > clinicData->appointments[j + 1].date.day)
+                {
+                    temp = clinicData->appointments[j];
+                    clinicData->appointments[j] = clinicData->appointments[j + 1];
+                    clinicData->appointments[j + 1] = temp;
+                }
+                else if ((clinicData->appointments[j].date.year == clinicData->appointments[j + 1].date.year) &&
+                    (clinicData->appointments[j].date.month == clinicData->appointments[j + 1].date.month) &&
+                    clinicData->appointments[j].date.day == clinicData->appointments[j + 1].date.day 
+                    && clinicData->appointments[j].time.hour > clinicData->appointments[j + 1].time.hour)
+                {
+                    temp = clinicData->appointments[j];
+                    clinicData->appointments[j] = clinicData->appointments[j + 1];
+                    clinicData->appointments[j + 1] = temp;
+                }
+                else if ((clinicData->appointments[j].date.year == clinicData->appointments[j + 1].date.year) &&
+                    (clinicData->appointments[j].date.month == clinicData->appointments[j + 1].date.month) &&
+                    clinicData->appointments[j].date.day == clinicData->appointments[j + 1].date.day 
+                    && clinicData->appointments[j].time.hour == clinicData->appointments[j + 1].time.hour
+                    && clinicData->appointments[j].time.min > clinicData->appointments[j + 1].time.min)
+                {
+                    temp = clinicData->appointments[j];
+                    clinicData->appointments[j] = clinicData->appointments[j + 1];
+                    clinicData->appointments[j + 1] = temp;
+                }
+
+            }
+        }
+
+    }
+}
+
+//Return the number of days in a month. Accounts for leap year.
+int monthDays(int year, int month)
+{
+    int days;
+    switch (month) {
+    case 2:
+        if (((year % 4) == 0 && (year % 100) != 0) || (year % 400) == 0)
+        {
+            days = 29;
+        }
+        else
+        {
+            days = 28;
+        }
+        break;
+    case 4:
+    case 6:
+    case 9:
+    case 11:
+        days = 30;
+        break;
+    default:
+        days = 31;
+        break;
+    }
+    return days;
+}
 
 //////////////////////////////////////
 // USER INPUT FUNCTIONS
@@ -781,7 +862,6 @@ void inputPatient(struct Patient* patient)
     printf("------------------\n");
     printf("Number: %05d\n", patient->patientNumber);
     printf("Name  : ");
-    //scanf(" %[^\n]", userName);
     inputCString(userName, 1, NAME_LEN);
 
     printf("\n");
@@ -811,8 +891,8 @@ void inputPhoneData(struct Phone* phone)
             strcpy(phone->description, "CELL");
             printf("Contact: %s\n"
                    "Number : ", phone->description);
-            //clearInputBuffer();
             inputCString(phoneInput, 10, 10);
+            clearInputBuffer();
             strcpy(phone->number, phoneInput);
             printf("\n");
             break;
@@ -820,7 +900,6 @@ void inputPhoneData(struct Phone* phone)
             strcpy(phone->description, "HOME");
             printf("Contact: %s\n"
                    "Number : ", phone->description);
-            //clearInputBuffer();
             inputCString(phoneInput, 10, 10);
             strcpy(phone->number, phoneInput);
             clearInputBuffer();
@@ -830,15 +909,14 @@ void inputPhoneData(struct Phone* phone)
             strcpy(phone->description, "WORK");
             printf("Contact: %s\n"
                    "Number : ", phone->description);
-            //clearInputBuffer();
             inputCString(phoneInput, 10, 10);
+            clearInputBuffer();
             strcpy(phone->number, phoneInput);
             printf("\n");
             break;
         case 4:
             strcpy(phone->description, "TBD");
             strcpy(phone->number, phoneInput);
-            //clearInputBuffer();
             break;
         default:
             printf("\n");
@@ -848,92 +926,6 @@ void inputPhoneData(struct Phone* phone)
 }
 
 
-//Sort the appointment in ascending order.
-//Since there are array with empty structure values, max appoitment counts down 
-//till it reaches a value for which patient number isn't 0. That's starting point for our sorting 
-//algorithm
-
-void sortRecords(struct Appointment appoints[], int max)
-{
-    int i, j;
-    struct Appointment temp;
-    
-    for (i = max-1; i > 0; i--)
-    {
-        if (appoints[i].patientNumber != 0)
-        {
-            //printf("%d\n", i);
-            for (j = 0; j < i; j++)
-            {
-                //printf("%d\n", j);
-                if (appoints[j].date.year > appoints[j + 1].date.year)
-                {
-                    temp = appoints[j];
-                    appoints[j] = appoints[j + 1];
-                    appoints[j + 1] = temp;
-                }
-                else if ((appoints[j].date.year == appoints[j + 1].date.year) && (appoints[j].date.month > appoints[j + 1].date.month))
-                {
-                    temp = appoints[j];
-                    appoints[j] = appoints[j + 1];
-                    appoints[j + 1] = temp;
-                }
-                else if ((appoints[j].date.year == appoints[j + 1].date.year) && (appoints[j].date.month == appoints[j + 1].date.month) && appoints[j].date.day > appoints[j + 1].date.day)
-                {
-                    temp = appoints[j];
-                    appoints[j] = appoints[j + 1];
-                    appoints[j + 1] = temp;
-                }
-                else if ((appoints[j].date.year == appoints[j + 1].date.year) &&
-                    (appoints[j].date.month == appoints[j + 1].date.month) &&
-                    appoints[j].date.day == appoints[j + 1].date.day && appoints[j].time.hour > appoints[j + 1].time.hour)
-                {
-                    temp = appoints[j];
-                    appoints[j] = appoints[j + 1];
-                    appoints[j + 1] = temp;
-                }
-                else if ((appoints[j].date.year == appoints[j + 1].date.year) &&
-                    (appoints[j].date.month == appoints[j + 1].date.month) &&
-                    appoints[j].date.day == appoints[j + 1].date.day && appoints[j].time.hour == appoints[j + 1].time.hour
-                    && appoints[j].time.min > appoints[j + 1].time.min)
-                {
-                    temp = appoints[j];
-                    appoints[j] = appoints[j + 1];
-                    appoints[j + 1] = temp;
-                }
-
-            }
-        }
-        
-    }
-}
-
-int monthDays(int year, int month)
-{
-    int days;
-    switch (month) {
-    case 2:
-        if ((year % 4) == 0 && (year % 100) != 0 || (year % 400) == 0)
-        {
-            days = 29;
-        }
-        else
-        {
-            days = 28;
-        }
-        break;
-    case 4:
-    case 6:
-    case 9:
-    case 11:
-        days = 30;
-        break;
-    default:
-        days = 31;
-        break;
-    }
-    return days;
-}
 
 //////////////////////////////////////
 // FILE FUNCTIONS
@@ -961,7 +953,6 @@ int importPatients(const char* datafile, struct Patient patients[], int max)
         printf("Failed to open file\n");
     }
     fclose(fp);
-    printf("%d\n", counter);
     return counter;
 }
 
@@ -990,7 +981,6 @@ int importAppointments(const char* datafile, struct Appointment appoints[], int 
         printf("Failed to open file\n");
     }
     fclose(fp);
-    printf("%d\n", counter);
     return counter;
 }
 

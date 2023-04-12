@@ -1,9 +1,9 @@
 /*/////////////////////////////////////////////////////////////////////////
                         Assignment 1 - Milestone 3
-Full Name  :
-Student ID#:
-Email      :
-Section    :
+Full Name  : Ashwin Pandey
+Student ID#: 156027211
+Email      : apandey21@myseneca.ca
+Section    : NFF
 
 Authenticity Declaration:
 I declare this submission is the result of my own work and has not been

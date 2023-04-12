@@ -1,9 +1,9 @@
 /*/////////////////////////////////////////////////////////////////////////
                         Assignment 1 - Milestone 3
-Full Name  :
-Student ID#:
-Email      :
-Section    :
+Full Name  : Ashwin Pandey
+Student ID#: 156027211
+Email      : apandey21@myseneca.ca
+Section    : NFF
 
 Authenticity Declaration:
 I declare this submission is the result of my own work and has not been
@@ -204,8 +204,23 @@ int nextPatientNumber(const struct Patient patient[], int max);
 int findPatientIndexByPatientNum(int patientNumber,
                                  const struct Patient patient[], int max);
 
-void sortRecords(struct Appointment appoints[], int max);
+//Finds the next empty index to save the appointment 
+int nextAppointment(struct Appointment* appoints, int maxAppointment);
 
+//Checks if the entered time slot is available
+int timeSlotAvailable(struct Date date, struct Time time, struct Appointment* appoints, int maxAppointment);
+
+//Finds the index number using Date and patient number
+int findAppointmentIndex(struct Appointment* appoints, int maxAppointment, struct Date date, int patientNumber);
+
+//Sort the appointment in ascending order.
+//Since there are array with empty structure values, max appoitment counts down 
+//till it reaches a value for which patient number isn't 0. That's starting point for our sorting 
+//algorithm
+void sortRecords(struct ClinicData clinicData[]);
+
+//Return the number of days in a month. Accounts for leap year.
+int monthDays(int year, int month);
 
 //////////////////////////////////////
 // USER INPUT FUNCTIONS

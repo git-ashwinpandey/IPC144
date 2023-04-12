@@ -1,9 +1,9 @@
 /*/////////////////////////////////////////////////////////////////////////
                         Assignment 1 - Milestone 3
-Full Name  :
-Student ID#:
-Email      :
-Section    :
+Full Name  : Ashwin Pandey
+Student ID#: 156027211
+Email      : apandey21@myseneca.ca
+Section    : NFF
 
 Authenticity Declaration:
 I declare this submission is the result of my own work and has not been
@@ -121,11 +121,11 @@ int inputIntRange(int lowerBound, int upperBound)
 char inputCharOption(const char charArray[])
 {
     char userInput[50];
-    int validChar = 1, stringLength = 0, i;
+    int validChar = 1, i;
     int charFound = 0, charLength;
 
 
-    stringLength = strlen(charArray);
+    //stringLength = strlen(charArray);
   
 
     while (validChar)
